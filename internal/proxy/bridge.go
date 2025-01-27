@@ -3,14 +3,14 @@ package proxy
 import (
 	"context"
 	"errors"
+	"github.com/CaptainDno/btunnel"
 	"github.com/CaptainDno/btunnel-proxy/internal/conn"
+	"github.com/CaptainDno/btunnel-proxy/internal/proto"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"go.uber.org/zap"
 	"sync/atomic"
 	"time"
 )
-
-// btun message format
 
 type Bridge interface {
 	// Send message using the bridge
@@ -82,20 +82,108 @@ func (b *ClientBridge) autoSpawnTunnels(ctx context.Context) {
 	}()
 }
 
-func (b *ClientBridge) spawnTunnel(ctx context.Context) error {
-	connection, err := b.bTunnelConnectionFactory.NewBTunnelConnection()
-	// TODO Use service messages to negotiate connection close
-	if err != nil {
-		return err
-	}
+const MaxIdle = time.Second * 10
+const MsgReadThreshold = 5
+
+var ProtoProxy = zap.String("proto", "btp")
+
+func createTunnel(ctx context.Context, connection *btunnel.Connection, messageChannel chan conn.Message, logger *zap.Logger) error {
+	ctx, cancel := context.WithCancelCause(ctx)
+	var err error
+	// This counter is used to terminate unused connections
+	read := atomic.Uint32{}
+
+	// Separate goroutines are used for reading and writing from connection
+	// Important notes:
+	// 1) Connection may only be closed inside writer goroutine using context (except when write error occurs - it triggers immediate close).
+	// 2) Both client and server may initiate connection close (even simultaneously)
 
 	go func() {
-		msg := <-b.messageChannel
+		var msg conn.Message
+	writeLoop:
+		for {
+			select {
+			case msg = <-messageChannel:
+				// TODO Send message
+				err = connection.WriteMessage()
 
+				if err != nil {
+					logger.Error("failed to send message", ProtoProxy, zap.Error(err))
+					// Return message back to channel
+					messageChannel <- msg
+					break writeLoop
+				}
+
+				break
+			case <-time.After(MaxIdle):
+				if read.Swap(0) < MsgReadThreshold {
+					// Send close command and return from goroutine
+					err = connection.WriteMessage(SrvCloseMessage)
+					if err != nil {
+						logger.Error("failed to send SrvConnClose message", ProtoProxy, zap.Error(err))
+						break writeLoop
+					}
+					// No more writes may be done after sending SrvConnClose
+					// When other end responds with SrvConnClose, reader calls cancel()
+					<-ctx.Done()
+					// Now it is safe to close the connection - no more messages may be transmitted by both sides
+					break writeLoop
+				}
+			case <-ctx.Done():
+				// This code will run only in two cases:
+				// 1) Other end of the tunnel requested connection close
+				// 2) Error occurred while reading message from connection
+				// In both cases reader goroutine has already returned => no active read operations on tunnel => it is safe to close
+
+				// In the first case, we need to send the same message back
+				if errors.Is(ctx.Err(), context.Canceled) {
+					err = connection.WriteMessage(SrvCloseMessage)
+					if err != nil {
+						logger.Error("failed to send reply SrvConnClose message", ProtoProxy, zap.Error(err))
+					}
+				}
+
+				// If message was sent, at this moment it is already delivered. so connection can be closed
+				break writeLoop
+			}
+		}
+
+		// Handle connection close
+		if err = ctx.Err(); !errors.Is(context.Canceled, err) {
+			logger.Info("closing tunnel because of error", ProtoProxy, zap.Error(err))
+		} else {
+			logger.Info("closing tunnel because of inactivity", ProtoProxy)
+		}
+
+		err = connection.Close()
+		if err != nil {
+			logger.Error("failed to close connection", ProtoProxy, zap.Error(err))
+		}
 	}()
 
 	go func() {
-
+		for {
+			msg, err := connection.ReadMessage()
+			if err != nil {
+				// This leads to case 2 (see case <-ctx.Done() in writer)
+				cancel(err)
+				logger.Error("error in tunnel", ProtoProxy, zap.Error(err))
+				return
+			}
+			// Increment count of read messages
+			read.Add(1)
+			// TODO Handle all messages
+			switch proto.ReadMessageKind(msg) {
+			case proto.SrvConnClose:
+				// This leads to case 1 (see case <-ctx.Done() in writer)
+				logger.Info("commanded to close tunnel", ProtoProxy)
+				cancel(nil)
+				return
+			case proto.SrvConnKeepAlive:
+				logger.Debug("received keep alive message", ProtoProxy)
+				break
+			}
+		}
 	}()
 }
 

@@ -4,29 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f76db3be-c275-4e0b-9bb0-829bf9b0e698" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/bridge/bridge.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/keys/pogreb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/proto/TCPClose.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/proto/TCPData.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/proto/TCPDialError.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/proto/TCPDialSuccess.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/proto/TCPOpen.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/discord.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/entrypoint.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/exitpoint.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/conn/conn.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/conn/message.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/proto/message.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/proto/message.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/proxy/bridge.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/proxy/connection_factory.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/proxy/message.go" beforeDir="false" />
-    </list>
+    <list default="true" id="f76db3be-c275-4e0b-9bb0-829bf9b0e698" name="Changes" comment="Finally working build" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -130,6 +108,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Finally working build" />
+    <option name="LAST_COMMIT_MESSAGE" value="Finally working build" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

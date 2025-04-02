@@ -143,6 +143,7 @@ func (brd *Bridge) serveConn(conn io.ReadWriteCloser, cid uint32) {
 func (brd *Bridge) serveTun() {
 	for {
 		if brd.ctx.Err() != nil {
+			brd.logger.Warn("context canceled", zap.Error(brd.ctx.Err()))
 			_ = brd.Close()
 			return
 		}
@@ -150,6 +151,7 @@ func (brd *Bridge) serveTun() {
 		msg, err := brd.tun.ReadMessage()
 
 		if err != nil {
+			brd.logger.Error("failed to read message from tunnel", zap.Error(err))
 			brd.cancel(err)
 			_ = brd.Close()
 			return

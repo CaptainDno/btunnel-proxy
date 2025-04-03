@@ -3,7 +3,7 @@ module github.com/CaptainDno/btunnel-proxy
 go 1.23
 
 // TODO Comment when pushing to master
-replace github.com/CaptainDno/btunnel => ../BTUNNEL
+//replace github.com/CaptainDno/btunnel => ../BTUNNEL
 
 require (
 	github.com/CaptainDno/btunnel v0.0.0-20250123174047-3e9c4c9cd676

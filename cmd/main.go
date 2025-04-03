@@ -18,7 +18,7 @@ const ServerKeyPath = "./keys.pgb"
 
 func main() {
 
-	logger, err := zap.NewDevelopment()
+	logger, err := zap.NewProduction()
 	if err != nil {
 		panic(err)
 	}

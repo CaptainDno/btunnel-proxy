@@ -6,7 +6,7 @@ go 1.23
 //replace github.com/CaptainDno/btunnel => ../BTUNNEL
 
 require (
-	github.com/CaptainDno/btunnel v0.0.0-20250123174047-3e9c4c9cd676
+	github.com/CaptainDno/btunnel v0.0.0-20250402220141-c79c343e9ffa
 	go.uber.org/zap v1.27.0
 )
 

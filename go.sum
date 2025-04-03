@@ -1,5 +1,6 @@
 github.com/CaptainDno/btunnel v0.0.0-20250123174047-3e9c4c9cd676 h1:NBd+LntTpMM1jEpTomTPfhR7D8fQDKhDL/euSwkQthQ=
 github.com/CaptainDno/btunnel v0.0.0-20250123174047-3e9c4c9cd676/go.mod h1:9l6pypAc31wFlwknihMrfR2w+MTWikkqkVJ3QN+Lymw=
+github.com/CaptainDno/btunnel v0.0.0-20250402220141-c79c343e9ffa/go.mod h1:9l6pypAc31wFlwknihMrfR2w+MTWikkqkVJ3QN+Lymw=
 github.com/akrylysov/pogreb v0.10.2 h1:e6PxmeyEhWyi2AKOBIJzAEi4HkiC+lKyCocRGlnDi78=
 github.com/akrylysov/pogreb v0.10.2/go.mod h1:pNs6QmpQ1UlTJKDezuRWmaqkgUE2TuU0YTWyqJZ7+lI=
 github.com/mhmtszr/concurrent-swiss-map v1.0.8 h1:GDSxgVrXsPFsraUJaPMm7ptYulj8qnWPgnwXcWbJNxo=

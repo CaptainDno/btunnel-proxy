@@ -117,7 +117,7 @@ func (brd *Bridge) serveConn(conn io.ReadWriteCloser, cid uint32) {
 			if err == io.EOF {
 				_ = conn.Close()
 				l = proto.WriteTCPCloseMessage(cid, buf)
-				err = brd.tun.WriteMessage(buf[:l])
+				err = brd.tunWrite(buf[:l])
 				if err != nil {
 					brd.logger.Error("failed to send TCPCloseMessage via tunnel", zap.Uint32("cid", cid), zap.Error(err))
 					brd.cancel(err)
@@ -130,7 +130,7 @@ func (brd *Bridge) serveConn(conn io.ReadWriteCloser, cid uint32) {
 			_ = conn.Close()
 			l = proto.WriteTCPCloseMessage(cid, buf)
 
-			err = brd.tun.WriteMessage(buf[:l])
+			err = brd.tunWrite(buf[:l])
 			if err != nil {
 				brd.logger.Error("failed to send TCPCloseMessage via tunnel", zap.Uint32("cid", cid), zap.Error(err))
 			}

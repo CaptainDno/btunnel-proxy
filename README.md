@@ -5,6 +5,8 @@ Socks adapter for [btunnel](https://github.com/CaptainDno/btunnel).
 Currently, only `CONNECT` Socks5 request is supported. Connection is not reestablished automatically on failure.
 So this software should be barely enough to serf the web or do other similar staff.
 
+A lot of errors related to reading from closed connection may pop up - it is normal right now.
+
 ## Usage
 
 Example assumes you compiled project into executable called `bt`. (e.g. by calling `go build -o ./bin/bt ./cmd` from project root)

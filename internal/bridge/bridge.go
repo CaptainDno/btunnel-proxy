@@ -163,36 +163,38 @@ func (brd *Bridge) serveTun() {
 		case proto.TCPConnectionOpen:
 			var address string
 			cid, address := proto.ReadTCPOpenMessage(msg)
-			conn, err := net.Dial("tcp", address)
 
-			if err != nil {
-				brd.logger.Warn("failed to dial tcp", zap.Uint32("cid", cid), zap.String("addr", address), zap.Error(err))
+			go func() {
+				conn, err := net.Dial("tcp", address)
 
-				l := proto.WriteTCPDialErrorMessage(cid, err.Error(), buf)
+				if err != nil {
+					brd.logger.Warn("failed to dial tcp", zap.Uint32("cid", cid), zap.String("addr", address), zap.Error(err))
+
+					l := proto.WriteTCPDialErrorMessage(cid, err.Error(), buf)
+					err = brd.tunWrite(buf[:l])
+					if err != nil {
+						brd.logger.Error("failed to send TCPDialError message via tunnel", zap.Uint32("cid", cid), zap.Error(err))
+						brd.cancel(err)
+						_ = brd.Close()
+						return
+					}
+				}
+
+				brd.logger.Info("opened TCP connection successfully", zap.Uint32("cid", cid), zap.String("addr", address))
+
+				brd.connmap.Store(cid, conn)
+
+				conn.LocalAddr().String()
+				l := proto.WriteTCPDialSuccessMessage(cid, buf, conn.LocalAddr())
 				err = brd.tunWrite(buf[:l])
 				if err != nil {
-					brd.logger.Error("failed to send TCPDialError message via tunnel", zap.Uint32("cid", cid), zap.Error(err))
+					brd.logger.Error("failed to send TCPDialSuccess message via tunnel", zap.Uint32("cid", cid), zap.Error(err))
 					brd.cancel(err)
 					_ = brd.Close()
 					return
 				}
-			}
-
-			brd.logger.Info("opened TCP connection successfully", zap.Uint32("cid", cid), zap.String("addr", address))
-
-			brd.connmap.Store(cid, conn)
-
-			conn.LocalAddr().String()
-			l := proto.WriteTCPDialSuccessMessage(cid, buf, conn.LocalAddr())
-			err = brd.tunWrite(buf[:l])
-			if err != nil {
-				brd.logger.Error("failed to send TCPDialSuccess message via tunnel", zap.Uint32("cid", cid), zap.Error(err))
-				brd.cancel(err)
-				_ = brd.Close()
-				return
-			}
-
-			go brd.serveConn(conn, cid)
+				brd.serveConn(conn, cid)
+			}()
 
 			break
 		case proto.TCPConnectionClose:

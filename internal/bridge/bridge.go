@@ -169,15 +169,15 @@ func (brd *Bridge) serveTun() {
 
 				if err != nil {
 					brd.logger.Warn("failed to dial tcp", zap.Uint32("cid", cid), zap.String("addr", address), zap.Error(err))
-
 					l := proto.WriteTCPDialErrorMessage(cid, err.Error(), buf)
 					err = brd.tunWrite(buf[:l])
 					if err != nil {
 						brd.logger.Error("failed to send TCPDialError message via tunnel", zap.Uint32("cid", cid), zap.Error(err))
 						brd.cancel(err)
 						_ = brd.Close()
-						return
+
 					}
+					return
 				}
 
 				brd.logger.Info("opened TCP connection successfully", zap.Uint32("cid", cid), zap.String("addr", address))

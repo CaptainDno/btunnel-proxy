@@ -13,7 +13,7 @@ Example assumes you compiled project into executable called `bt`. (e.g. by calli
 
 On your server execute:
 ```shell
-./bt server keygen -n 10 example # Generate 10 keys for client with id "example"
+./bt server keygen --n 10 example # Generate 10 keys for client with id "example"
 
 # Now copy example.pgb to the client machine (using scp or any other method)
 
